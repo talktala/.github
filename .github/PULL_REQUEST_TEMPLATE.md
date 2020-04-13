@@ -22,4 +22,4 @@ Please check the relevant options.
 - [ ] I have made corresponding changes to the documentation (RFC/open API)
 - [ ] My changes generate no new warnings (console warning errors)
 - [ ] I have added tests that prove my fix is effective or that my feature works (non front end)
-- [ ] I have update one the following packages: react-toolkit, talkspace-api
+- [ ] I have updated one of the following packages: react-toolkit, talkspace-api and notified QA
