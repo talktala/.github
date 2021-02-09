@@ -15,5 +15,14 @@ jobs:
       - uses: actions/checkout@v1
       - uses: dylanvann/check-pull-request-title@v1
         with:
-          # Match pull request titles in the form UI-1234 - Message.
-          pattern: '^((hotfix\/|Revert\s|)(MOBILE|IL|NYC|CORE|DS)-\d*\s)+-\s.+'
+          # Match pull request titles in the form of:
+          # Release/s123 
+          # dev => canary
+          # canary => dev
+          # canary => master
+          # master => dev
+          # MOBILE-123123 - fix bug
+          # MOBILE-123123 MOBILE-34534 - fix bug
+          # hotfix/MOBILE-123123 - fix sueprbug
+          # Revert MOBILE-123123 - revert because Lu didn't like it
+          pattern: '^((((hotfix\/|Revert\s|)(MOBILE|IL|NYC|CLINICAL|CUSTOMER|CORE|DS)-\d*\s)+-\s.+)|Release\/s\d+|canary => dev|canary => master|master => dev|dev => canary)'
