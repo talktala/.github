@@ -16,4 +16,4 @@ jobs:
       - uses: dylanvann/check-pull-request-title@v1
         with:
           # Match pull request titles in the form UI-1234 - Message.
-          pattern: '^((MOBILE|IL|NYC|CLINICAL|CUSTOMER|CORE|DS)-\d*\s)+-\s.+'
+          pattern: '^((hotfix\/|Revert\s|)(MOBILE|IL|NYC|CLINICAL|CUSTOMER|CORE|DS)-\d*\s)+-\s.+'
