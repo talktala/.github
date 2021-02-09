@@ -25,4 +25,4 @@ jobs:
           # MOBILE-123123 MOBILE-34534 - fix bug
           # hotfix/MOBILE-123123 - fix sueprbug
           # Revert MOBILE-123123 - revert because Lu didn't like it
-          pattern: '^((((hotfix\/|Revert\s|fix:\s|feat:\s|perf:\s|)(MOBILE|IL|NYC|CLINICAL|CUSTOMER|CORE|DS)-\d*\s)+-\s.+)|Release\/s\d+|canary => dev|canary => master|master => dev|dev => canary)'
+          pattern: '^((((hotfix\/|Revert\s|fix:\s|feat:\s|perf:\s|)(MOBILE|IL|NYC|CORE|DS)-\d*\s)+-\s.+)|Release\/s\d+|canary => dev|canary => master|master => dev|dev => canary)'
