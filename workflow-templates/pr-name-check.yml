@@ -19,8 +19,11 @@ jobs:
           # Release/s123 
           # dev => canary
           # canary => dev
-          # canary => master
           # master => dev
+          # main => dev
+          # fix: MOBILE-123123 - fix bug
+          # feat: NYC-123123 - fix bug
+          # perf: MOBILE-123123 - fix bug
           # MOBILE-123123 - fix bug
           # MOBILE-123123 MOBILE-34534 - fix bug
           # hotfix/MOBILE-123123 - fix sueprbug
