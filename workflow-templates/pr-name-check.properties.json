@@ -1,0 +1,5 @@
+  
+{
+    "name": "PR Name Check",
+    "description": "Make sure PR titles confirm to Talkspace naming conventions",
+}
