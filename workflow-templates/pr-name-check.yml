@@ -12,8 +12,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: dylanvann/check-pull-request-title@v1
+      - uses: deepakputhraya/action-pr-title@master
         with:
           # Match pull request titles in the form of:
           # Release/s123 
@@ -27,4 +26,4 @@ jobs:
           # MOBILE-123123 MOBILE-34534 - fix bug
           # hotfix/MOBILE-123123 - fix sueprbug
           # Revert MOBILE-123123 - revert because Lu didn't like it
-          pattern: '^(((dev|canary|master|main)\s=>\sdev)|Release\/s\d+|(hotfix\/|Revert\s|fix:\s|feat:\s|perf:\s)?((MOBILE|IL|NYC|CORE|DS)-\d*\s)+-\s.+)'
+          regex: '^(((dev|canary|master|main)\s=>\sdev)|Release\/s\d+|(hotfix\/|Revert\s|fix:\s|feat:\s|perf:\s)?((MOBILE|IL|NYC|CORE|DS)-\d*\s)+-\s.+)'
