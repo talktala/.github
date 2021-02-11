@@ -1,0 +1,30 @@
+name: 'PR name check'
+on:
+  pull_request:
+    types:
+      # Check title when opened.
+      - opened
+      # Check title when new commits are pushed.
+      # Required to use as a status check.
+      - synchronize
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: dylanvann/check-pull-request-title@v1
+        with:
+          # Match pull request titles in the form of:
+          # Release/s123 
+          # canary => dev
+          # master => dev
+          # main => dev
+          # fix: MOBILE-123123 - fix bug
+          # feat: NYC-123123 - fix bug
+          # perf: MOBILE-123123 - fix bug
+          # MOBILE-123123 - fix bug
+          # MOBILE-123123 MOBILE-34534 - fix bug
+          # hotfix/MOBILE-123123 - fix sueprbug
+          # Revert MOBILE-123123 - revert because Lu didn't like it
+          pattern: '^(((dev|canary|master|main)\s=>\sdev)|Release\/s\d+|(hotfix\/|Revert\s|fix:\s|feat:\s|perf:\s)?((MOBILE|IL|NYC|CORE|DS)-\d*\s)+-\s.+)'
