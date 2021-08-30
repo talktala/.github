@@ -2,5 +2,5 @@
 {
     "name": "PR Name Check",
     "description": "Make sure PR titles confirm to Talkspace naming conventions",
-    "iconName": "jira-icon"
+    "iconName": "jira-logo"
 }

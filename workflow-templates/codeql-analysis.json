@@ -1,0 +1,5 @@
+{
+    "name": "CodeQL Scanning",
+    "description": "Code Scanning using GitHub's CodeQL",
+    "iconName": "codeql"
+}
