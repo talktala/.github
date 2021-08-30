@@ -1,5 +1,5 @@
 {
     "name": "Jira Environment Label",
     "description": "Labels the corrosponding jira tickets when merges happen in dev and canary",
-    "iconName": "jira-icon"
+    "iconName": "jira-logo"
 }
