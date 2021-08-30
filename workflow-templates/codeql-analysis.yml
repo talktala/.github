@@ -45,7 +45,7 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
       with:
-        config-file: talktala/.github/config/codeql-config.yml
+        config-file: talktala/.github/config/codeql-config.yml@master
         languages: ${{ matrix.language }}
         # If you wish to specify custom queries, you can do so here or in a config file.
         # By default, queries listed here will override any specified in a config file.
