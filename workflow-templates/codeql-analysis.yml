@@ -13,10 +13,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ development, canary, master ]
+    branches: [ jod_main_development, develop, development, canary, master, main ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ development, canary ]
+    branches: [ jod_main_development, develop, development, canary ]
   schedule:
     - cron: '20 8 * * 6'
 
