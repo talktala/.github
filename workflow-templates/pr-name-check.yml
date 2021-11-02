@@ -29,5 +29,5 @@ jobs:
           # hotfix/MOBILE-123123 - fix sueprbug
           # Revert "MOBILE-123123 - revert because Lu didn't like it"
           # Revert "perf: MOBILE-123123 - fix bug"
-          regex: '^(Revert\s\"?)?(((dev|canary|master|main)\s=>\sdev)|Release\/s\d+|(hotfix\/|fix:\s|feat:\s|perf:\s)?((MOBILE|IL|NYC|CORE|DS)-\d*).+)'
+          regex: '^(Revert\s\"?)?(((dev|canary|master|main)\s=>\sdev)|Release\/s\d+|(hotfix\/|fix:\s|feat:\s|perf:\s)?((MOBILE|IL|NYC|CORE|DS|CLINICAL|CUSTOMER|AUTOMATION|CNET|MEMBER|HPE|PLATFORM)-\d*).+)'
           
