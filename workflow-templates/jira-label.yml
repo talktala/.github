@@ -30,7 +30,7 @@ jobs:
               }' > out.json
           #cat out.json
           echo "Get all JIRA tickets in PR..."
-          grep -Eo '(CORE|CLINICAL|CUSTOMER|MOBILE|AUTOMATION|IL|NYC)-[0-9]{2,4}' out.json | uniq > tickets.txt
+          grep -Eo '(CORE|CLINICAL|CUSTOMER|MOBILE|AUTOMATION|IL|NYC|CNET|MEMBER|HPE|PLATFORM)-[0-9]{2,4}' out.json | uniq > tickets.txt
           echo "Tickets being merged:"
           cat tickets.txt
           echo ""
