@@ -1,0 +1,96 @@
+name: Qovery Environment
+
+on:
+  push:
+    branches:
+      - 'mime/*'
+
+jobs:
+  mime-environment:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - id: create-environment
+        name: Clone mime base environment
+        env:
+          QOVERY_CLI_ACCESS_TOKEN: ${{ secrets.QOVERY_CLI_ACCESS_TOKEN }}
+        run: |
+          curl -s https://get.qovery.com | bash
+
+          echo "Organization name: ${{ vars.QOVERY_ORGANIZATION_NAME }}"
+          echo "Project name: ${{ vars.QOVERY_PROJECT_NAME }}"
+          echo "Blueprint name: ${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}"
+          
+          epic_name="${GITHUB_REF_NAME#mime/}"
+          new_environment_name="${epic_name//[^a-zA-Z0-9\-_]/}"
+          migrations_repos=("talkspace-api" "quickmatch-api" "sns-services-api" "surveys")
+          [[ "${migrations_repos}" =~ "${GITHUB_REPOSITORY#talktala/}" ]] && migrations=true
+
+          q_environs=`qovery environment list \
+            --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+            --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+            --json`     
+
+          exists=$(echo "$q_environs" | jq ".[] | select(.name == \"$new_environment_name\")")
+
+          if [[ -n "$exists" ]]; then
+            echo "Mime environment exists, updating service for ${GITHUB_REPOSITORY#talktala/}"
+            qovery application update \
+              --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+              --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+              --environment "$new_environment_name" \
+              --application "${GITHUB_REPOSITORY#talktala/}" \
+              --branch "${GITHUB_REF_NAME}"
+            
+            if [[ $migrations == true ]]; then
+              qovery lifecycle update \
+                --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+                --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+                --environment "$new_environment_name" \
+                --lifecycle "${GITHUB_REPOSITORY#talktala/}-migrations" \
+                --branch "${GITHUB_REF_NAME}"
+
+              qovery lifecycle deploy \
+                --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+                --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+                --environment "$new_environment_name" \
+                --lifecycle "${GITHUB_REPOSITORY#talktala/}-migrations"
+            fi
+
+            qovery application deploy \
+              --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+              --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+              --environment "$new_environment_name" \
+              --application "${GITHUB_REPOSITORY#talktala/}" \
+              -w
+          else
+            echo "Cloning '${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}' environment into '$new_environment_name' environment"
+            qovery environment clone \
+              --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+              --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+              --environment "${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}" \
+              --new-environment-name "$new_environment_name"
+
+            if [[ $migrations == true ]]; then
+              qovery lifecycle update \
+                --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+                --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+                --environment "$new_environment_name" \
+                --lifecycle "${GITHUB_REPOSITORY#talktala/}-migrations" \
+                --branch "${GITHUB_REF_NAME}"
+            fi
+
+            qovery application update \
+              --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+              --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+              --environment "$new_environment_name" \
+              --application "${GITHUB_REPOSITORY#talktala/}" \
+              --branch "${GITHUB_REF_NAME}"
+
+            qovery environment deploy \
+              --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+              --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+              --environment "$new_environment_name" \
+              -w
+          fi

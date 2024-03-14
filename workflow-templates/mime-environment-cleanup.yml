@@ -1,0 +1,60 @@
+name: Qovery Environment
+
+on:
+  delete:
+    branches:
+      - "mime/*"
+
+jobs:
+  mime-environment:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - id: delete-environment
+        name: Remove mime environment
+        env:
+          QOVERY_CLI_ACCESS_TOKEN: ${{ secrets.QOVERY_CLI_ACCESS_TOKEN }}
+        run: |
+          curl -s https://get.qovery.com | bash
+
+          echo "Organization name: ${{ vars.QOVERY_ORGANIZATION_NAME }}"
+          echo "Project name: ${{ vars.QOVERY_PROJECT_NAME }}"
+
+          branch="${{ github.event.ref }}"
+          echo "Deleted branch?:"
+          echo "$branch"
+
+          epic_name="${branch#mime/}"
+          environment_name="${epic_name//[^a-zA-Z0-9\-_]/}"
+
+          delete_ok=True
+          repos=('talkspace-api' 'quickmatch-api' 'auth-api' 'sns-services-api' 'backoffice-web' 'talkspace-web' 'surveys' 'cron-service')
+          for repo in "${repos[@]}"; do
+            repo_branch=$(curl -s -H "Authorization: token ${{ secrets.GIT_TOKEN }}" \
+              -X GET "https://api.github.com/repos/talktala/${repo}/branches/${branch}")
+            if [[ $(echo "$repo_branch" | jq '.name') == \"$branch\" ]]; then
+              echo "Found matching branch:"
+              echo $branch
+              delete_ok=False
+              break
+            fi
+          done
+
+          q_environs=`qovery environment list \
+            --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+            --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+            --json`
+          env_exists=$(echo "$q_environs" | jq ".[] | select(.name == \"$environment_name\")")
+
+          echo "Matching Qovery environment found"
+          echo $env_exists
+
+          if [[ -n "$env_exists" && "$delete_ok" == "True" ]]; then
+            echo "Mime $environment_name environment exists, found no epic branches in other repos, deleting"
+            qovery environment delete \
+              --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+              --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+              --environment "$environment_name" \
+              -w
+          fi
