@@ -1,0 +1,5 @@
+{
+    "name": "Mime Environment Create/Update",
+    "description": "Create or update ephemeral environment on epic branch",
+    "iconName": "qovery"
+}
