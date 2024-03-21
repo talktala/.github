@@ -1,4 +1,4 @@
-name: Qovery Environment
+name: Qovery Environment Cleanup
 
 on:
   delete:
