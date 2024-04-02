@@ -1,9 +1,6 @@
 name: Qovery Environment Cleanup
 
-on:
-  delete:
-    branches:
-      - "mime/*"
+on: workflow_call
 
 jobs:
   mime-environment-removal:

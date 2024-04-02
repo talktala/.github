@@ -1,9 +1,6 @@
 name: Qovery Environment Create/Update
 
-on:
-  push:
-    branches:
-      - 'mime/*'
+on: workflow_call
 
 jobs:
   mime-environment-create-update:
