@@ -1,12 +1,9 @@
 name: Qovery Environment Cleanup
 
-on:
-  delete:
-    branches:
-      - "mime/*"
+on: workflow_call
 
 jobs:
-  mime-environment:
+  mime-environment-removal:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -22,13 +19,14 @@ jobs:
           echo "Project name: ${{ vars.QOVERY_PROJECT_NAME }}"
 
           branch="${{ github.event.ref }}"
-          echo "Deleted branch?:"
+          echo "Deleted branch:"
           echo "$branch"
 
           epic_name="${branch#mime/}"
           environment_name="${epic_name//[^a-zA-Z0-9\-_]/}"
 
           delete_ok=True
+          found_branch=''
           repos=('talkspace-api' 'quickmatch-api' 'auth-api' 'sns-services-api' 'backoffice-web' 'talkspace-web' 'surveys' 'cron-service')
           for repo in "${repos[@]}"; do
             repo_branch=$(curl -s -H "Authorization: token ${{ secrets.GIT_TOKEN }}" \
@@ -37,6 +35,7 @@ jobs:
               echo "Found matching branch:"
               echo $branch
               delete_ok=False
+              found_branch=$repo
               break
             fi
           done
@@ -47,9 +46,6 @@ jobs:
             --json`
           env_exists=$(echo "$q_environs" | jq ".[] | select(.name == \"$environment_name\")")
 
-          echo "Matching Qovery environment found"
-          echo $env_exists
-
           if [[ -n "$env_exists" && "$delete_ok" == "True" ]]; then
             echo "Mime $environment_name environment exists, found no epic branches in other repos, deleting"
             qovery environment delete \
@@ -57,4 +53,9 @@ jobs:
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
               --environment "$environment_name" \
               -w
+          elif [[ -n "$env_exists" ]]; then
+            echo "Mime environment $environment_name exists, but a matching branch was found in $found_branch."
+            echo "Mime environment will be deleted when no matching branches are found"
+          else
+            echo "No Mime environment found matching $branch"
           fi

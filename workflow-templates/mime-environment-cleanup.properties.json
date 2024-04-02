@@ -1,5 +1,0 @@
-{
-    "name": "Mime Environment Cleanup",
-    "description": "Delete ephemeral environment on epic branch removal",
-    "iconName": "qovery"
-}

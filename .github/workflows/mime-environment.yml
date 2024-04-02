@@ -1,12 +1,9 @@
 name: Qovery Environment Create/Update
 
-on:
-  push:
-    branches:
-      - 'mime/*'
+on: workflow_call
 
 jobs:
-  mime-environment:
+  mime-environment-create-update:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -24,8 +21,6 @@ jobs:
           
           epic_name="${GITHUB_REF_NAME#mime/}"
           new_environment_name="${epic_name//[^a-zA-Z0-9\-_]/}"
-          migrations_repos=("talkspace-api" "quickmatch-api" "sns-services-api" "surveys")
-          [[ "${migrations_repos}" =~ "${GITHUB_REPOSITORY#talktala/}" ]] && migrations=true
 
           q_environs=`qovery environment list \
             --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
@@ -42,21 +37,6 @@ jobs:
               --environment "$new_environment_name" \
               --application "${GITHUB_REPOSITORY#talktala/}" \
               --branch "${GITHUB_REF_NAME}"
-            
-            if [[ $migrations == true ]]; then
-              qovery lifecycle update \
-                --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
-                --project "${{ vars.QOVERY_PROJECT_NAME }}" \
-                --environment "$new_environment_name" \
-                --lifecycle "${GITHUB_REPOSITORY#talktala/}-migrations" \
-                --branch "${GITHUB_REF_NAME}"
-
-              qovery lifecycle deploy \
-                --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
-                --project "${{ vars.QOVERY_PROJECT_NAME }}" \
-                --environment "$new_environment_name" \
-                --lifecycle "${GITHUB_REPOSITORY#talktala/}-migrations"
-            fi
 
             qovery application deploy \
               --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
@@ -71,15 +51,6 @@ jobs:
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
               --environment "${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}" \
               --new-environment-name "$new_environment_name"
-
-            if [[ $migrations == true ]]; then
-              qovery lifecycle update \
-                --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
-                --project "${{ vars.QOVERY_PROJECT_NAME }}" \
-                --environment "$new_environment_name" \
-                --lifecycle "${GITHUB_REPOSITORY#talktala/}-migrations" \
-                --branch "${GITHUB_REF_NAME}"
-            fi
 
             qovery application update \
               --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
