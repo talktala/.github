@@ -59,9 +59,19 @@ jobs:
               --application "${GITHUB_REPOSITORY#talktala/}" \
               --branch "${GITHUB_REF_NAME}"
 
+            echo "Running initial Deployment"
             qovery environment deploy \
               --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
               --environment "$new_environment_name" \
+              -w
+
+            echo "Re-deploying web and backend services with custom domain certificates"
+            all_apps=("client-web" "therapist-web" "quickmatch-web" "auth-api" "backoffice-web" "quickmatch-api" "sns-services-api" "talkspace-api")
+            qovery application deploy \
+              --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+              --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+              --environment "$environment_name" \
+              --applications "$(IFS=,; echo "${all_apps[*]}")" \
               -w
           fi
