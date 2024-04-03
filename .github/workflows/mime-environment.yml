@@ -20,42 +20,42 @@ jobs:
           echo "Blueprint name: ${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}"
           
           epic_name="${GITHUB_REF_NAME#mime/}"
-          new_environment_name="${epic_name//[^a-zA-Z0-9\-_]/}"
+          environment_name="${epic_name//[^a-zA-Z0-9\-_]/}"
 
           q_environs=`qovery environment list \
             --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
             --project "${{ vars.QOVERY_PROJECT_NAME }}" \
             --json`     
 
-          exists=$(echo "$q_environs" | jq ".[] | select(.name == \"$new_environment_name\")")
+          exists=$(echo "$q_environs" | jq ".[] | select(.name == \"$environment_name\")")
 
           if [[ -n "$exists" ]]; then
             echo "Mime environment exists, updating service for ${GITHUB_REPOSITORY#talktala/}"
             qovery application update \
               --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
-              --environment "$new_environment_name" \
+              --environment "$environment_name" \
               --application "${GITHUB_REPOSITORY#talktala/}" \
               --branch "${GITHUB_REF_NAME}"
 
             qovery application deploy \
               --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
-              --environment "$new_environment_name" \
+              --environment "$environment_name" \
               --application "${GITHUB_REPOSITORY#talktala/}" \
               -w
           else
-            echo "Cloning '${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}' environment into '$new_environment_name' environment"
+            echo "Cloning '${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}' environment into '$environment_name' environment"
             qovery environment clone \
               --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
               --environment "${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}" \
-              --new-environment-name "$new_environment_name"
+              --new-environment-name "$environment_name"
 
             qovery application update \
               --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
-              --environment "$new_environment_name" \
+              --environment "$environment_name" \
               --application "${GITHUB_REPOSITORY#talktala/}" \
               --branch "${GITHUB_REF_NAME}"
 
@@ -63,7 +63,7 @@ jobs:
             qovery environment deploy \
               --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
-              --environment "$new_environment_name" \
+              --environment "$environment_name" \
               -w
 
             echo "Re-deploying web and backend services with custom domain certificates"
