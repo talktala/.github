@@ -18,7 +18,7 @@ jobs:
           echo "Organization name: ${{ vars.QOVERY_ORGANIZATION_NAME }}"
           echo "Project name: ${{ vars.QOVERY_PROJECT_NAME }}"
           echo "Blueprint name: ${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}"
-          
+
           epic_name="${GITHUB_REF_NAME#mime/}"
           environment_name="${epic_name//[^a-zA-Z0-9\-_]/}"
 
@@ -74,4 +74,64 @@ jobs:
               --environment "$environment_name" \
               --applications "$(IFS=,; echo "${all_apps[*]}")" \
               -w
+
+            qovery_status_markdown_output=`qovery service list \
+            --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+            --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+            --environment "$environment_name" \
+            --markdown`
+
+            echo "$qovery_status_markdown" >> "$GITHUB_STEP_SUMMARY"
+            echo "NEW_ENVIRONMENT=true" >> "$GITHUB_OUTPUT"
+            echo "QOVERY_STATUS_MARKDOWN_OUTPUT=${qovery_status_markdown_output}" >> "$GITHUB_OUTPUT"
           fi
+      - id: update-jira
+        name: Update Jira Ticket with Qovery Environment info
+        shell: python
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          NEW_ENVIRONMENT: ${{ steps.create-environment.outputs.QOVERY_STATUS_MARKDOWN_OUTPUT }}
+          COMMENT: ${{ steps.create-environment.outputs.QOVERY_STATUS_MARKDOWN_OUTPUT }}
+        run: |
+          import subprocess
+          subprocess.run(["pip", "install", "jira", "markdown"])
+          from markdown import markdown
+          from jira import JIRA
+          import os
+
+          EPIC_NAME = os.getenv('GITHUB_REF_NAME').replace('mime/', '')
+          URL = f"{os.getenv('JIRA_BASE_URL')}/rest/api/3/issue/{EPIC_NAME}/comment"
+          JIRA_BASE_URL = os.getenv('JIRA_BASE_URL')
+          JIRA_USER_EMAIL = os.getenv('JIRA_USER_EMAIL')
+          JIRA_API_TOKEN = os.getenv('JIRA_API_TOKEN')
+          NEW_ENVIRONMENT = os.getenv('NEW_ENVIRONMENT')
+          MARKDOWN = os.getenv('COMMENT')
+
+          options = {
+              'server': JIRA_BASE_URL 
+          }
+
+          jira = JIRA(options, basic_auth=(JIRA_USER_EMAIL, JIRA_API_TOKEN))
+
+          HTML = markdown(MARKDOWN)
+
+          comment = {
+              "type": "doc",
+              "version": 1,
+              "content": [
+                {
+                  "type": "codeBlock",
+                  "content": [
+                    {
+                      "text": f"`{COMMENT}`",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+
+          if NEW_ENVIRONMENT:
+            jira.add_comment(EPIC_NAME, MARKDOWN)
