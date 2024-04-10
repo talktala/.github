@@ -79,9 +79,9 @@ jobs:
             --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
             --project "${{ vars.QOVERY_PROJECT_NAME }}" \
             --environment "$environment_name" \
-            --markdown`
+            --jira`
 
-            echo "$qovery_status_markdown" >> "$GITHUB_STEP_SUMMARY"
+            # echo "$qovery_status_markdown" >> "$GITHUB_STEP_SUMMARY"
             echo "NEW_ENVIRONMENT=true" >> "$GITHUB_OUTPUT"
             echo "QOVERY_STATUS_MARKDOWN_OUTPUT=${qovery_status_markdown_output}" >> "$GITHUB_OUTPUT"
           fi
@@ -114,24 +114,6 @@ jobs:
           }
 
           jira = JIRA(options, basic_auth=(JIRA_USER_EMAIL, JIRA_API_TOKEN))
-
-          HTML = markdown(MARKDOWN)
-
-          comment = {
-              "type": "doc",
-              "version": 1,
-              "content": [
-                {
-                  "type": "codeBlock",
-                  "content": [
-                    {
-                      "text": f"`{COMMENT}`",
-                      "type": "text"
-                    }
-                  ]
-                }
-              ]
-            }
 
           if NEW_ENVIRONMENT:
             jira.add_comment(EPIC_NAME, MARKDOWN)
