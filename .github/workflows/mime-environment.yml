@@ -36,7 +36,8 @@ jobs:
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
               --environment "$environment_name" \
               --application "${GITHUB_REPOSITORY#talktala/}" \
-              --branch "${GITHUB_REF_NAME}"
+              --branch "${GITHUB_REF_NAME}" \
+              --auto-deploy=false
 
             qovery application deploy \
               --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
@@ -57,7 +58,8 @@ jobs:
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
               --environment "$environment_name" \
               --application "${GITHUB_REPOSITORY#talktala/}" \
-              --branch "${GITHUB_REF_NAME}"
+              --branch "${GITHUB_REF_NAME}" \
+              --auto-deploy=false
 
             echo "Running initial Deployment"
             qovery environment deploy \
