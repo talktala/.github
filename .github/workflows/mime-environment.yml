@@ -107,6 +107,7 @@ jobs:
           NEW_ENVIRONMENT: ${{ steps.create-environment.outputs.NEW_ENVIRONMENT }}
           COMMENT: ${{ steps.create-environment.outputs.QOVERY_STATUS_JIRA_OUTPUT }}
         run: |
+          import os
           print(os.getenv(NEW_ENVIRONMENT))
           print(os.getenv(COMMENT))
           import subprocess
@@ -114,9 +115,6 @@ jobs:
           print(jira_installation.stdout)
           print(jira_installation.stderr)
           from jira import JIRA
-          import os
-
-          print(os.getenv(NEW_ENVIRONMENT))
 
 
           EPIC_NAME = os.getenv('GITHUB_REF_NAME').replace('mime/', '')
