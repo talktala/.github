@@ -112,8 +112,8 @@ jobs:
           print(os.getenv('COMMENT'))
           import subprocess
           jira_install = subprocess.run(["pip", "install", "jira"])
-          print(jira_installation.stdout)
-          print(jira_installation.stderr)
+          print(jira_install.stdout)
+          print(jira_install.stderr)
           from jira import JIRA
 
 
