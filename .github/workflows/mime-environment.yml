@@ -77,14 +77,25 @@ jobs:
               --applications "$(IFS=,; echo "${all_apps[*]}")" \
               -w
 
-            qovery_status_markdown_output=`qovery service list \
+            qovery_status_jira_markdown_output=$(qovery service list \
             --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
             --project "${{ vars.QOVERY_PROJECT_NAME }}" \
             --environment "$environment_name" \
-            --jira`
+            --jira)
+
+            qovery_status_markdown_output=$(qovery service list \
+            --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+            --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+            --environment "$environment_name" \
+            --markdown)
 
             echo "NEW_ENVIRONMENT=true" >> "$GITHUB_OUTPUT"
-            echo "QOVERY_STATUS_MARKDOWN_OUTPUT=${qovery_status_markdown_output}" >> "$GITHUB_OUTPUT"
+            echo "QOVERY_STATUS_JIRA_OUTPUT<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$qovery_status_jira_markdown_output" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+
+            echo "$qovery_status_markdown_output" >> "$GITHUB_STEP_SUMMARY"
+
           fi
       - id: update-jira
         name: Update Jira Ticket with Qovery Environment info
@@ -93,8 +104,8 @@ jobs:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          NEW_ENVIRONMENT: ${{ steps.create-environment.outputs.QOVERY_STATUS_MARKDOWN_OUTPUT }}
-          COMMENT: ${{ steps.create-environment.outputs.QOVERY_STATUS_MARKDOWN_OUTPUT }}
+          NEW_ENVIRONMENT: ${{ steps.create-environment.outputs.NEW_ENVIRONMENT }}
+          COMMENT: ${{ steps.create-environment.outputs.QOVERY_STATUS_JIRA_OUTPUT }}
         run: |
           import subprocess
           subprocess.run(["pip", "install", "jira", "markdown"])
@@ -118,5 +129,4 @@ jobs:
 
           if NEW_ENVIRONMENT:
             jira.add_comment(EPIC_NAME, MARKDOWN)
-            echo "$MARKDOWN" >> "$GITHUB_STEP_SUMMARY"
 
