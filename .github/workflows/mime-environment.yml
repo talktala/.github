@@ -108,8 +108,8 @@ jobs:
           COMMENT: ${{ steps.create-environment.outputs.QOVERY_STATUS_JIRA_OUTPUT }}
         run: |
           import os
-          print(os.getenv(NEW_ENVIRONMENT))
-          print(os.getenv(COMMENT))
+          print(os.getenv('NEW_ENVIRONMENT'))
+          print(os.getenv('COMMENT'))
           import subprocess
           jira_install = subprocess.run(["pip", "install", "jira"])
           print(jira_installation.stdout)
