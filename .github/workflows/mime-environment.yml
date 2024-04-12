@@ -108,8 +108,7 @@ jobs:
           COMMENT: ${{ steps.create-environment.outputs.QOVERY_STATUS_JIRA_OUTPUT }}
         run: |
           import subprocess
-          subprocess.run(["pip", "install", "jira", "markdown"])
-          from markdown import markdown
+          subprocess.run(["pip", "install", "jira"])
           from jira import JIRA
           import os
 
