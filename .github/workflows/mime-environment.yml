@@ -97,6 +97,10 @@ jobs:
             echo "$qovery_status_markdown_output" >> "$GITHUB_STEP_SUMMARY"
 
           fi
+      - id: prep python
+        name: prep python environment
+        run: |
+          pip install jira
       - id: update-jira
         name: Update Jira Ticket with Qovery Environment info
         shell: python
@@ -108,12 +112,12 @@ jobs:
           COMMENT: ${{ steps.create-environment.outputs.QOVERY_STATUS_JIRA_OUTPUT }}
         run: |
           import os
-          print(os.getenv('NEW_ENVIRONMENT'))
-          print(os.getenv('COMMENT'))
           import subprocess
-          jira_install = subprocess.run(["python3", "-m", "pip", "install", "jira"], capture_output=True, text=True)
-          print(jira_install.stdout)
-          print(jira_install.stderr)
+          # subprocess.run(["python3", "-m", "venv", ".venv"])
+          #  subprocess.run(["python3", "-m", "venv", ".venv"])
+          # jira_install = subprocess.run(["python3", "-m", "pip", "install", "jira"], capture_output=True, text=True)
+          # print(jira_install.stdout)
+          # print(jira_install.stderr)
           from jira import JIRA
 
 
