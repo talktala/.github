@@ -61,21 +61,21 @@ jobs:
               --branch "${GITHUB_REF_NAME}" \
               --auto-deploy=false
 
-            # echo "Running initial Deployment"
-            # qovery environment deploy \
-            #   --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
-            #   --project "${{ vars.QOVERY_PROJECT_NAME }}" \
-            #   --environment "$environment_name" \
-            #   -w
+            echo "Running initial Deployment"
+            qovery environment deploy \
+              --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+              --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+              --environment "$environment_name" \
+              -w
 
-            # echo "Re-deploying web and backend services with custom domain certificates"
-            # all_apps=("client-web" "therapist-web" "quickmatch-web" "auth-api" "backoffice-web" "quickmatch-api" "sns-services-api" "talkspace-api")
-            # qovery application deploy \
-            #   --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
-            #   --project "${{ vars.QOVERY_PROJECT_NAME }}" \
-            #   --environment "$environment_name" \
-            #   --applications "$(IFS=,; echo "${all_apps[*]}")" \
-            #   -w
+            echo "Re-deploying web and backend services with custom domain certificates"
+            all_apps=("client-web" "therapist-web" "quickmatch-web" "auth-api" "backoffice-web" "quickmatch-api" "sns-services-api" "talkspace-api")
+            qovery application deploy \
+              --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
+              --project "${{ vars.QOVERY_PROJECT_NAME }}" \
+              --environment "$environment_name" \
+              --applications "$(IFS=,; echo "${all_apps[*]}")" \
+              -w
 
             qovery_status_jira_markdown_output=$(qovery service list \
             --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
@@ -113,11 +113,6 @@ jobs:
         run: |
           import os
           import subprocess
-          # subprocess.run(["python3", "-m", "venv", ".venv"])
-          #  subprocess.run(["python3", "-m", "venv", ".venv"])
-          # jira_install = subprocess.run(["python3", "-m", "pip", "install", "jira"], capture_output=True, text=True)
-          # print(jira_install.stdout)
-          # print(jira_install.stderr)
           from jira import JIRA
 
 
