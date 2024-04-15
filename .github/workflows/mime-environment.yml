@@ -97,7 +97,7 @@ jobs:
             echo "$qovery_status_markdown_output" >> "$GITHUB_STEP_SUMMARY"
 
           fi
-      - id: prep python
+      - id: prep-python
         name: prep python environment
         run: |
           pip install jira
