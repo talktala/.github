@@ -44,6 +44,7 @@ jobs:
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
               --environment "$environment_name" \
               --application "${GITHUB_REPOSITORY#talktala/}" \
+              --commit-id "${GITHUB_SHA}" \
               -w
           else
             echo "Cloning '${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}' environment into '$environment_name' environment"
