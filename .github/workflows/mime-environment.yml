@@ -52,7 +52,6 @@ jobs:
               --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
               --project "${{ vars.QOVERY_PROJECT_NAME }}" \
               --environment "${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}" \
-              --cluster "Qovery" \
               --new-environment-name "$environment_name"
 
             qovery application update \
