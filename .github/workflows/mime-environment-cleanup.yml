@@ -23,7 +23,8 @@ jobs:
           echo "$branch"
 
           epic_name="${branch#mime/}"
-          environment_name="${epic_name//[^a-zA-Z0-9\-_]/}"
+          environment_name_upper="${epic_name//[^a-zA-Z0-9\-_]/}"
+          environment_name="${environment_name_upper,,}
 
           delete_ok=True
           found_branch=''
