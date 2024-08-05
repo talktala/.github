@@ -20,7 +20,8 @@ jobs:
           echo "Blueprint name: ${{ vars.QOVERY_BLUEPRINT_ENVIRONMENT_NAME }}"
 
           epic_name="${GITHUB_REF_NAME#mime/}"
-          environment_name="${epic_name//[^a-zA-Z0-9\-_]/}"
+          environment_name_upper="${epic_name//[^a-zA-Z0-9\-_]/}"
+          environment_name="${environment_name_upper,,}"
 
           q_environs=`qovery environment list \
             --organization "${{ vars.QOVERY_ORGANIZATION_NAME }}" \
